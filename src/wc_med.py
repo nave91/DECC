@@ -8,8 +8,7 @@ import os
 
 import pandas as pd
 
-from manage import Tools, INPUT_DIR, OUTPUT_DIR
-from manage import OUT_FILE_WC, OUT_FILE_MED
+from manage import Tools, args
 
 
 class ParseDir:
@@ -34,8 +33,12 @@ class ParseDir:
         self.file_series= []
 
     def get_files(self):
-        for f in os.listdir(self.dir_):
+        sortedf = sorted([f for f in os.listdir(self.dir_)])
+        for f in sortedf:
             abs_file_path = self.dir_ + f
+            if args['v'] > 0:
+                sys.stderr.write("# Loading file:"+\
+                                 abs_file_path+"\n")
             if os.path.isfile(abs_file_path):
                 self.file_series.append(
                     # Converts all files into
@@ -49,6 +52,8 @@ class ParseDir:
 
     def parse_files(self):
         # Calculate medians and word counts
+        if args['v'] > 1:
+                sys.stderr.write("# Parsing files and calculating.\n")
         for file_ in self.file_series:
             wc, med = file_.collect()
             self.word_count = self.word_count.append(wc)
@@ -56,14 +61,16 @@ class ParseDir:
 
     def show_results(self):
         # Writes results back to directory 
+        if args['v'] > 1:
+                sys.stderr.write("# Writing results to files.\n")
         wc_result = self.word_count.value_counts()
         wc_result = wc_result.sort_index()
         wc_result.to_csv(
-            OUTPUT_DIR+OUT_FILE_WC,
+            args['odir']+args['owc'],
             sep='\t'
         )
         med_result = self.medians
-        with open(OUTPUT_DIR+OUT_FILE_MED,'w') as file_:
+        with open(args['odir']+args['omed'],'w') as file_:
             for med in med_result:
                 file_.write(str(med)+"\n")
 
@@ -94,6 +101,11 @@ class ParseFile:
 
 
     def read(self, gen_medians):
+        
+        if args['v'] > 1:
+                sys.stderr.write("# Reading file: "+
+                                 str(self.file_)+
+                                 "\n")
         lsts = []
         with open(self.file_, 'r') as f:
             while True:
@@ -102,6 +114,9 @@ class ParseFile:
                     # Get medians from generator and maintain them
                     # across multiple files
                     med = gen_medians.send(len(lst))
+                    if args['v'] > 2:
+                        sys.stderr.write("# "+str(lst)+"\n")
+                        sys.stderr.write(">>> "+str(med)+" <<<"+"\n")
                     self.medians.append(med)
                     lsts.append(lst)
                     
@@ -120,5 +135,12 @@ class ParseFile:
 
 
 if __name__=='__main__':
-    f = ParseDir('../wc_input/')
-    print f.get_results()
+    from properties import get_args
+    # Find current running program name 
+    # and pass it for argument parsing
+    running_file_name = os.path.basename(__file__).split('.')[0]
+    get_args(running_file_name,args)
+
+    # Initiate with default directory
+    f = ParseDir(args['idir'])
+    f.get_results()

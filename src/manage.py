@@ -14,7 +14,12 @@ INPUT_DIR = "../wc_input/"
 OUTPUT_DIR = "../wc_output/"
 OUT_FILE_WC = "wc_result.txt"
 OUT_FILE_MED = "med_result.txt"
-
+args = { 'idir': INPUT_DIR,
+         'odir': OUTPUT_DIR,
+         'owc': OUT_FILE_WC,
+         'omed': OUT_FILE_MED,
+         'v': 1
+         }
 
 class Tools:
     """ All necessary tools can be factored
@@ -54,3 +59,11 @@ class Tools:
         g = gen()
         next(g)
         return g
+
+if __name__ == "__main__":
+    from properties import get_args
+    # Find current running program name 
+    # and pass it for argument parsing
+    running_file_name = os.path.basename(__file__).split('.')[0]
+    get_args(running_file_name,args)
+    
