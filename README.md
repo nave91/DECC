@@ -42,3 +42,59 @@ has 5 words so the running median for the first line is simply 5.  Since the sec
 
 We'd like you to implement your own version of this running median that calculates the median number of words per line, for each line of the text files in the `wc_input` directory.  If there are multiple files in that directory, the files should be combined into a single stream and processed by your running median program in alphabetical order, so a file named `hello.txt` should be processed before a file named `world.txt`.  The resulting running median for each line should then be outputted to a text file named `med_result.txt` in the `wc_output` directory.
 
+
+Usage
+======
+
+```
+usage: wc_med.py [-h] [-v VERBOSE] idir odir
+
+Main class used to calculate word count and medians.
+
+positional arguments:
+  idir                  full path of directory toload from. default:
+                        ../wc_input/
+  odir                  full path of output directory towrite into. default:
+                        ../wc_output/
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -v VERBOSE, --verbose VERBOSE
+                        increase output verbosity
+```
+
+Explanation
+===========
+
+Most of the code is self-explainatory. But the following lists the purpose of files in ./src/
+directory.
+
+* wc_med.py: Main python file to load and run files.
+
+* manage.py: Supporter to main file to load defaults and tools.
+
+* properties.py: Argument parser to explain and handle arguments.
+
+By default:
+
+* Input directory: ../wc_input/
+
+* Output directory: ../wc_output/
+
+* Output word count file: wc_result.txt
+
+* Output median file: med_result.txt
+
+Features
+========
+
+* Extends pandas package to suit requirements. Make use of all pandas functions on
+  Series.
+
+* PEP8 Style coding
+
+* Extremely Modular to factor code in many dimensions.
+
+* Argument parsing to help CLI usage.
+
+* Used heaps to calculate medians instead of standard key-value dictionaries.
